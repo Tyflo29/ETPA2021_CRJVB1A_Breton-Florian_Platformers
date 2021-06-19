@@ -1,0 +1,903 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8" />
+    <title>Making your first Phaser 3 Game - Part 10</title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+var config = {
+    type: Phaser.AUTO,
+    width: 2400,
+    height: 3100,
+    physics: {
+        default: 'arcade',
+        arcade: {
+        gravity: { y: 300 },
+            debug: true
+        }
+    },
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    }
+};
+
+var jx;
+var jy;
+var textx;
+var texty;
+var ecrit;
+////////////////
+var direction = 'right';
+var reactive;
+var rocher;
+var rocher1;
+var boby;
+var power;
+////////////////
+var boiteR;
+var boiteJ;
+var boiteV;
+var carton;
+var score = 0;
+var livraison = 1;
+var colis = 0;
+////////////////
+var boite1;
+var boite2;
+var boite3;
+////////////////
+var inter;
+var inter1;
+var power2;
+var power1;
+var degat = true;
+var timer = 0; 
+var timer1 = 0; 
+var timer2 = 0;
+var timer3 = 0;
+
+var timerdegat = 0;
+var temps = 0;
+var hp;
+var vie = 3;
+var player;
+var neige;
+var block;
+/////////
+var yeti;
+var yeti1;
+var souris;
+var pique;
+var pique1;
+////////
+var platforms;
+var glace;
+var cursors;
+var ecran;
+var sac;
+var score1;
+////////////////////
+var victoire = false;
+var gameOver = false;
+var revive = false;
+///////////////////
+var scoreText;
+var annonce;
+var annonce1;
+//////////////////
+var jouer = false;
+var distance = 0;
+var minute = 0;
+var chrono = 0;
+///////////////////
+var terrains;
+var tilesmap;
+var map;
+var tiles;
+///////////////////
+var monTimer;
+//////////////////
+var a;
+var b;
+var c;
+var d;
+var e;
+///////////////////
+var controleText;
+var controleText1;
+///////////////////
+var niveau = 0;
+var GLACE = false;
+var NEIGE = false;
+var GROUND = false;
+var planer = true;
+    
+var game = new Phaser.Game(config);
+
+function preload ()
+{
+    /////////////////////////////////> Interface
+    this.load.image('interface', 'assets/interface.png');
+    this.load.image('powerenable', 'assets/powerenable.png');
+    this.load.image('vie1', 'assets/vie1.png');
+    this.load.image('vie2', 'assets/vie2.png');
+    this.load.image('vie3', 'assets/vie3.png');
+    this.load.image('vie4', 'assets/vie4.png');
+    this.load.image('ecran', 'assets/ecran1.png');
+    this.load.image('ui', 'assets/ui.png');
+
+    /////////////////////////////////> Consommable
+    this.load.image('power', 'assets/power.png');
+    this.load.image('star', 'assets/star.png');
+    this.load.image('boiteR', 'assets/boiteR.png');
+    this.load.image('boiteJ', 'assets/boiteJ.png');
+    this.load.image('boiteV', 'assets/boiteV.png');
+    this.load.image('carton', 'assets/carton.png');
+
+    /////////////////////////////////> Ennemis
+    this.load.image('yeti', 'assets/yeti.png');
+    this.load.image('souris', 'assets/chauve.png');
+    this.load.image('pique', 'assets/Pique.png');
+
+    /////////////////////////////////> Platformers
+    this.load.image('glace', 'assets/glace.png');
+    //this.load.image('montagne', 'assets/montagne.png');
+    this.load.image('montagne', 'assets/montagne2.png');
+    this.load.image('neige', 'assets/neige.png');
+    this.load.image('ground', 'assets/platform.png');
+    this.load.image('ground1', 'assets/platform1.png');
+    this.load.image('wall', 'assets/wall.png');
+    this.load.image('mur', 'assets/mur.png');
+
+    /////////////////////////////////> Player
+    //this.load.spritesheet('dude', 'assets/dudefinal.png', { frameWidth: 39, frameHeight: 47 });
+    this.load.spritesheet('dude', 'assets/heros.png', { frameWidth: 40, frameHeight: 48 });
+
+    /////////////////////////////////> Tiled
+    //this.load.tilemapTiledJSON('monde', 'Tiled/monde.json');
+    //this.load.image('tilesmap', 'Tiled/tilesmap.tsx');
+    
+}
+
+function create ()
+{
+    cameras = this.cameras.main.setSize(1960, 1080);
+    this.cameras.main.centerOn(0, 0);
+    this.cameras.main.setBounds(0,0,2430,2440);
+
+    //-------> Background <-------//
+    this.add.image(1150, 1000, 'montagne');
+    //this.add.image(400, 20000, 'montagne');
+
+    //  The platforms group contains the ground and the 2 ledges we can jump on
+    platforms = this.physics.add.staticGroup();
+    glace = this.physics.add.staticGroup();
+    neige = this.physics.add.staticGroup();
+    wall = this.physics.add.staticGroup();
+    power = this.physics.add.staticGroup();
+    power1 = this.physics.add.staticGroup();
+    souris = this.physics.add.staticGroup();
+    yeti = this.physics.add.staticGroup();
+    pique = this.physics.add.staticGroup();
+    pique1 = this.physics.add.staticGroup();
+    hp = this.physics.add.staticGroup();
+    boiteR = this.physics.add.staticGroup();
+    boiteJ = this.physics.add.staticGroup();
+    boiteV = this.physics.add.staticGroup();
+    carton = this.physics.add.staticGroup();
+
+    //---------------------> Plateformers <------------------------------//
+    platforms.create(400, 568, 'ground1').setScale(2).refreshBody();
+    platforms.create(1200, 1080, 'ground').setScale(2).refreshBody();
+    platforms.create(400, 1080, 'ground1').setScale(2).refreshBody();
+    platforms.create(400, 2300, 'ground1').setScale(2).refreshBody();
+    neige.create(1200, 2300, 'neige').setScale(2).refreshBody();
+    glace.create(2300, 1000, 'ground').setScale(2).refreshBody();
+    platforms.create(2000, 2300, 'ground').setScale(2).refreshBody();
+    platforms.create(-70, 200, 'ground1');
+    platforms.create(1900, 1270, 'ground1').refreshBody();
+    glace.create(600, 300, 'glace').refreshBody();
+    platforms.create(1400, 950, 'ground1');
+    neige.create(2000, 500, 'neige');
+    neige.create(1000, 1400, 'neige').setScale(2).refreshBody();;
+    platforms.create(100, 1570, 'ground1').refreshBody();
+    wall.create(750, 2180, 'mur').setScale(1.5).refreshBody();
+    platforms.create(1800, 700, 'ground1');
+    platforms.create(2030, 2100, 'ground1').setScale(1.5).refreshBody();
+    glace.create(1400, 1900, 'glace').setScale(1.5).refreshBody();
+    
+    boiteR.create(70, 155, 'boiteR').setScale(1.5);
+    boiteJ.create(1806, 655, 'boiteJ').setScale(1.5);
+    boiteV.create(2100, 2240, 'boiteV').setScale(1.5);
+    carton.create(300, 1035, 'carton');
+    power.create(2000,465,'power').setScale(2);
+
+    //wall.create(2400,750,'wall');
+    //wall.create(2400,150,'wall');
+    
+
+    /*
+    //--- Map Tiled : ----------------------------------------------------------//
+    map = this.add.tilemap('monde');
+    tiles = this.map.addTilesetImage('tilesmap');
+
+    // Layer 
+    terrains = this.map.createLayer('terrains', this.tiles, 0, 0);
+    decors = this.map.createLayer('decors', this.tiles, 0, 0);
+
+    // Collider
+    this.terr.setCollisionByExclusion(-1, true);
+
+    
+    // Overlap
+    this.terrains.setTileIndexCallback([16,17,18,31,32,33,46,47,48,136,137,138,140,141,142,76,77,78,91,92,93,106,107,108,166,167,181,182], ()=> { toucheGround() });
+    this.terrains.setTileIndexCallback([21,22,23,36,37,38,51,52,53,170,171,185,186], ()=> { toucheNeige() });
+    this.terrains.setTileIndexCallback([26,27,28,41,42,43,56,57,58], ()=> { toucheGlace() });
+    //this.decors.setTileIndexCallback([177,192,193], ()=> { touchePoint() });
+    */
+
+    //---------------------> Player <------------------------------//
+    player = this.physics.add.sprite(900, 900, 'dude').setScale(1.5).setCollideWorldBounds(true);
+    //player.setBounce(0.2);
+
+
+    //  Our player animations, turning, walking left and walking right.
+    this.anims.create({
+        key: 'left',
+        frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
+        frameRate: 10,
+        repeat: -1
+    });
+    
+    this.anims.create({
+        key: 'leftjump',
+        frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
+        frameRate: 20,
+        repeat: -1
+    });
+    /////////////////////
+    this.anims.create({
+        key: 'turn',
+        frames: [ { key: 'dude', frame: 7 } ],
+        frameRate: 20
+    });
+
+    this.anims.create({
+        key: 'turn1',
+        frames: [ { key: 'dude', frame: 0 } ],
+        frameRate: 20
+    });
+    /////////////////////
+    this.anims.create({
+        key: 'planer',
+        frames: [ { key: 'dude', frame: 6 } ],
+        frameRate: 20
+    });
+
+    this.anims.create({
+        key: 'planer1',
+        frames: [ { key: 'dude', frame: 0 } ],
+        frameRate: 20
+    });
+    /////////////////////
+    this.anims.create({
+        key: 'right',
+        frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 9 }),
+        frameRate: 10,
+        repeat: -1
+    });
+    
+    this.anims.create({
+        key: 'rightjump',
+        frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 9 }),
+        frameRate: 20,
+        repeat: -1
+    });
+
+    //  Input Events
+    cursors = this.input.keyboard.createCursorKeys();
+    customKeys = this.input.keyboard.addKeys('F');
+
+    bombs = this.physics.add.group();
+    pique = this.physics.add.group();
+    pique1 = this.physics.add.group();
+    souris = this.physics.add.group();
+    eis = this.physics.add.group();   
+
+    //////////////////////////////////////////////////////////////////////////
+
+    this.physics.add.collider(player, platforms,toucheGround);
+    ////////////////////////////////////
+    this.physics.add.overlap(player, boiteR,touchePoint1);
+    this.physics.add.overlap(player, boiteJ,touchePoint2);
+    this.physics.add.overlap(player, boiteV,touchePoint3);
+    this.physics.add.overlap(player, carton, toucheColis);
+    ///////////////////////////////////
+    this.physics.add.collider(player, glace,toucheGlace);
+    this.physics.add.collider(player, neige,toucheNeige);
+    this.physics.add.overlap(player, power,touchePower);
+    this.physics.add.collider(player, wall);
+    ///////////////////////////////////
+    this.physics.add.overlap(souris, player);
+    this.physics.add.collider(souris, platforms);
+    ///////////////////////////////////
+    this.physics.add.overlap(pique, player);
+    this.physics.add.collider(pique, platforms);
+    this.physics.add.collider(pique, glace);
+    //_________________________//
+    this.physics.add.overlap(pique1, player);
+    this.physics.add.collider(pique1, platforms);
+    this.physics.add.collider(pique1, glace);
+    //////////////////////////////////////////////////////////////////////////
+
+    block = this.physics.add.image(2000, 300, 'mur').setScale(1.5).setDepth(2);
+    this.physics.add.collider(player,block);
+    block.body.allowGravity = false;
+    block.body.immovable = true;
+    block.body.moves = false;
+    a = this.tweens.add({
+        targets: block,
+        x: 1500,
+        duration: 3000,
+        ease: 'linear',
+        repeat: -1,
+        yoyo: true
+    });
+    //_____________________________________
+    block2 = this.physics.add.image(300, 300, 'mur').setScale(1.5);
+    this.physics.add.collider(player,block2,);
+    block2.body.allowGravity = false;
+    block2.body.immovable = true;
+    block2.body.moves = false;
+    b = this.tweens.add({
+        targets: block2,
+        y: 000,
+        duration: 3000,
+        ease: 'linear',
+        repeat: -1,
+        yoyo: true
+    });
+    //_____________________________________
+    glace = this.physics.add.image(1400, 950, 'glace');
+    this.physics.add.collider(player,glace,toucheGlace,null,this);
+    glace.body.allowGravity = false;
+    glace.body.immovable = true;
+    glace.body.moves = false;
+    c = this.tweens.add({
+        targets: glace,
+        y: 400,
+        duration: 5000,
+        ease: 'linear',
+        repeat: -1,
+        yoyo: true
+    });
+    //_____________________________________
+    yeti = this.physics.add.image(50, 490, 'yeti');
+    this.physics.add.overlap(player,yeti,toucheEnnemis,null,this);
+    yeti.body.allowGravity = false;
+    yeti.body.immovable = true;
+    yeti.body.moves = false;
+    d = this.tweens.add({
+        targets: yeti,
+        x: 500,
+        duration: 5000,
+        ease: 'linear',
+        repeat: -1,
+        yoyo: true
+    });
+    //_____________________________________
+    yeti1 = this.physics.add.image(850, 2226, 'yeti');
+    this.physics.add.overlap(player,yeti1,toucheEnnemis,null,this);
+    yeti1.body.allowGravity = false;
+    yeti1.body.immovable = true;
+    yeti1.body.moves = false;
+    e = this.tweens.add({
+        targets: yeti1,
+        x: 1600,
+        duration: 5000,
+        ease: 'linear',
+        repeat: -1,
+        yoyo: true
+    });
+    //_____________________________________
+
+    pique = pique.create(700, 650, 'pique');
+    pique.body.allowGravity = false;
+    this.physics.add.overlap(player,pique,toucherPique,null,this);
+
+    pique1 = pique1.create(1380, 1482, 'pique');
+    pique1.body.allowGravity = false;
+    this.physics.add.overlap(player,pique1,toucherPique,null,this);
+
+    souris = souris.create(2000, 1150, 'souris').setScale(2);
+    this.physics.add.overlap(player,souris,toucheEnnemis,null,this);
+
+    /////////////////////////////////////////////////////////interface///////////////////////////////////////////////////////////////////////////////////////////
+
+    inter = this.add.image(980,500,'ui').setScrollFactor(0);
+    power2 = this.add.image(85,70,'powerenable').setScrollFactor(0).setScale(3.5).setVisible(true);
+    power1 = this.add.image(85,70,'power').setScrollFactor(0).setScale(3.5).setVisible(false);
+    //-----------------//
+    sac = this.add.image(1820,70,'carton').setScrollFactor(0).setScale(1.5).setVisible(false);
+    boite1 = this.add.image(1670,70,'boiteR').setScrollFactor(0).setScale(2).setVisible(false);
+    boite2 = this.add.image(1670,70,'boiteJ').setScrollFactor(0).setScale(2).setVisible(false);
+    boite3 = this.add.image(1670,70,'boiteV').setScrollFactor(0).setScale(2).setVisible(false);
+    //-----------------//
+    inter1 = this.add.image(950,515,'interface').setScrollFactor(0).setVisible(false);
+    this.controleText = this.add.text(1399, 45, '0', { fontFamily : 'Consolas', fontSize: '50px',fill: '#F00'}).setScrollFactor(0);
+
+    ///////////////////////////////////////////////////////////////////////////
+    annonce= this.add.text(800, 500, 'Vous avez Gagné', { fontFamily : 'Consolas', fontSize: '32px', fill: '#5F5' }).setScrollFactor(0).setVisible(false);
+    annonce1= this.add.text(800, 500, 'Vous avez Perdu', { fontFamily : 'Consolas', fontSize: '32px', fill: '#F00' }).setScrollFactor(0).setVisible(false);
+    scoreText = this.add.text(350,95, 'Etat du carton', { fontFamily : 'Consolas', fontSize: '20px', fill: '#000' }).setScrollFactor(0).setVisible(true);
+
+    ///////////////////////////////////////////////////////////////////////////
+    this.textx = this.add.text(400, 200, '0', {fill: '#FFF'}).setScrollFactor(0);
+    this.texty = this.add.text(400, 250, '0', {fill: '#FFF'}).setScrollFactor(0);
+    this.colis = this.add.text(400, 300, '0', {fill: '#FFF'}).setScrollFactor(0);
+    this.score1 = this.add.text(400, 350, '0', {fill: '#FFF'}).setScrollFactor(0);
+    this.controleText1 = this.add.text(400, 450, '0', {fill: '#FFF'}).setScrollFactor(0);
+
+    ///////////////////////////////////////////////////////////////////////////
+    ecran = this.add.image(980,500,'ecran').setDepth(2).setScrollFactor(0);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    monTimer = this.time.addEvent({
+          delay: 1000,
+          callback: compteUneSeconde,
+          callbackScope: this,
+          loop: true
+        });
+}
+    //////////////////////////////////
+    function toucheGlace()
+    {
+        GLACE= true;
+        GROUND= false;
+        NEIGE= false;
+        return;
+    }
+    function toucheGround()
+    {
+        GLACE= false;
+        GROUND= true;
+        NEIGE= false;
+        return;
+    }
+    function toucheNeige()
+    {
+        NEIGE= true;
+        GROUND= false;
+        GLACE= false;
+        return;
+    }
+    //////////////////////////////////
+
+    function touchePower(player, power, interpower)
+    {
+        power.destroy();
+        power2.setVisible(false);
+        planer = true;
+        power1.visible = true;
+        return power1;
+    }
+    
+    //////////////////////////////////
+    function toucheEnnemis()
+    {
+        if(degat == true){
+            timerdegat = timerdegat + 1
+            if(timerdegat >= 50){
+                degat = false
+                timerdegat = 0
+            }
+        }
+        return;
+    }
+    function toucherPique()
+    {
+        if(degat == true){
+            timerdegat = timerdegat + 1;
+            if(timerdegat >= 0){
+                degat = false;
+                timerdegat = 0;
+            }
+        }
+        return;
+    }
+    function réanimation()
+    {
+        player.x = 900;
+        player.y = 900;
+        player.setVelocityX(0);
+        hp = 3;
+        hp = this.add.image(600,50,'vie1').setScrollFactor(0).setScale(2).setVisible(true);
+        return;
+    }
+    //////////////////////////////////
+
+    function myFunction() {
+        gameOver = true;
+        return gameOver;
+    }
+
+    function toucheColis()
+    {
+        colis = 1
+        return colis;
+    }
+
+    //////////////////////////////////
+    function touchePoint1()
+    {
+        if(livraison == 1){
+            if(colis == 1){
+                score = score + 1 ;
+            }
+            colis = 0;
+            livraison = livraison + 1;
+        }
+        return score;
+    }
+
+    function touchePoint2()
+    {
+        if(livraison == 2){
+            if(colis == 1){
+                score = score + 1 ;
+            }
+            colis = 0;
+            livraison = livraison + 1;
+        }
+        return;
+    }
+
+    function touchePoint3()
+    {
+        if(livraison == 3){
+            if(colis == 1){
+                score = score + 1 ;
+            }
+            colis = 0;
+        }
+        return score;
+    }
+    //////////////////////////////////
+
+    function compteUneSeconde() {
+        chrono = chrono + 1; // on incremente le chronometre d'une unite
+        return;
+    }
+
+    function ascenseur(){
+        if (ecran.visible== true){
+            a.pause();
+            b.pause();
+            c.pause();
+            d.pause();
+            e.pause();
+        }
+        else{
+            a.resume();
+            b.resume();
+            c.resume();
+            d.resume();
+            e.resume();
+        }
+    }
+
+function update ()
+{   
+    this.cameras.main.startFollow(player,false,0.05,0.05,0,0);
+
+    ///////////////////////////////////
+    //Chrono
+    if (chrono == 60){
+        chrono = 0;
+        minute = minute + 1;
+    }
+    if(victoire == false || gameOver == true){
+        this.controleText.setText(minute + "m:" + chrono + "s");
+    }
+    ///////////////////////////////////
+    this.textx.setText("X :" + Math.round(0 + player.x));
+    this.texty.setText("y :" + Math.round(0 + player.y));
+    this.colis.setText("Colis : " + colis);
+    this.score1.setText("Score : " + score);
+    this.controleText1.setText("Livraison : " + livraison);
+    ///////////////////////////////////
+    if(colis == 1){
+        sac.setVisible(true);
+    }
+    else{
+        sac.setVisible(false);
+    }
+
+    if(livraison == 1){
+        boite1.setVisible(true);
+    }
+    else if(livraison == 2){
+        boite2.setVisible(true);
+        boite1.setVisible(false);
+    }
+    else{
+        boite3.setVisible(true);
+        boite2.setVisible(false);
+    }
+    ///////////////////////////////////
+    if(ecran.visible == true){
+        player.setVelocityX(0);
+        player.body.allowGravity = false;
+        ascenseur();
+    }
+    if(customKeys.F.isDown){
+        ecran.setVisible(false);
+        //window.setTimeout(myFunction, 60000);
+        jouer = true;
+        player.body.allowGravity = true;
+        ascenseur();
+    }
+    ///////////////////////////////////
+    if (score == 3){
+        victoire = true;      
+    }
+    ///////////////////////////////////
+
+    if (Math.round(player.x) >= Math.round(souris.x - 200) && Math.round(player.x) <= Math.round(souris.x + 200) ){   
+        if (cursors.space.isDown && souris.body.touching.down){
+            souris.setVelocityY(-200);
+        }
+    }
+    
+    //////////////////////////////////
+
+    pique.setVelocityX(0);
+    if(Math.round(player.x) >= Math.round(pique.x - 50) && Math.round(player.x) <= Math.round(pique.x + 50) && Math.round(player.y) >= Math.round(pique.y)) {
+        rocher = true;
+    }
+
+    pique1.setVelocityX(0);
+    if(Math.round(player.x) >= Math.round(pique1.x - 50) && Math.round(player.x) <= Math.round(pique1.x + 50) && Math.round(player.y) >= Math.round(pique1.y)) {
+        rocher1 = true;
+    }
+    
+    //////////////////////////////////
+
+    if (rocher == true){
+        pique.setAccelerationY(1000);
+        reactive = true;
+        if (reactive == true){
+            timer = timer + 1;
+            if (timer == 150){
+                pique.setAccelerationY(-1000);
+                reactive = false;
+                rocher = false;
+                timer = 0;
+            }
+        }
+    }
+    if (rocher1 == true){
+        pique1.setAccelerationY(1000);
+        reactive = true;
+        if (reactive == true){
+            timer3 = timer2 + 1;
+            if (timer3 == 150){
+                pique1.setAccelerationY(-1000);
+                reactive1 = false;
+                rocher1 = false;
+                timer2 = 0;
+            }
+        }
+    }
+    //////////////////////////////////
+
+    /*if (Math.round(player.x) <= Math.round(pique.x - 200) || Math.round(player.x) <= Math.round(pique.x + 200) ){   
+        if (Math.round(player.y) <= Math.round(pique.y - 100) || Math.round(player.y) <= Math.round(pique.y + 100) ){    
+            if (pique.body.touching.down){
+                this.physics.moveToObject(pique, player, 100);
+            }
+        }
+    }*/
+
+    ///////////////////////////////////
+    if(vie>0 && degat == false)
+    {
+        vie = vie - 1;
+        degat = true;
+    }
+    if(vie == 3)
+    {
+        hp = this.add.image(425,60,'vie1').setScrollFactor(0).setScale(2).setVisible(true);
+    }
+    
+    else if(vie == 2)
+    {
+        hp = this.add.image(425,60,'vie2').setScrollFactor(0).setScale(2).setVisible(true);
+    }
+    else if (vie == 1)
+    {
+        hp = this.add.image(425,60,'vie3').setScrollFactor(0).setScale(2).setVisible(true);
+    }
+    else
+    {
+        hp = this.add.image(425,60,'vie4').setScrollFactor(0).setScale(2).setVisible(true);
+        réanimation();
+    } 
+            
+    //////////////////////////////////
+    if (victoire == true)
+    {
+        annonce.visible = true;
+        inter1.visible = true;
+        player.anims.play('turn');
+        player.setVelocityX(0);
+        player.setAccelerationX(0);
+        return inter1;
+        return;
+    }
+    //_____________________________//
+    if (gameOver == true)
+    {
+        annonce1.visible = true;
+        inter1.visible = true;
+        player.anims.play('turn');
+        player.setVelocityX(0);
+        player.setAccelerationX(0);
+        return;
+    }
+    //////////////////////////////////
+
+    
+    ////////////////////////////////////////////////////////////////////
+                //___________Commande clavier___________//
+    if (planer == true){
+        if (cursors.down.isDown && !player.body.touching.down){
+            player.setVelocityY(40);
+            if(direction == 'right'){
+                player.anims.play('planer1');
+            }
+            else{
+                player.anims.play('planer');
+            }
+        }
+    }
+
+    if (GLACE == true)
+        if(cursors.right.isDown && !player.body.touching.down)
+        {
+            direction = 'right';
+            player.setAccelerationX(250);
+            player.anims.play('rightjump', true);
+        }
+        else if (cursors.right.isDown && player.body.touching.down)
+        {
+            direction = 'right';
+            player.setAccelerationX(250);
+            player.anims.play('right', true);
+        }
+
+        else if(cursors.left.isDown && !player.body.touching.down)
+        {
+            direction = 'left';
+            player.setAccelerationX(-250);
+            player.anims.play('leftjump', true);
+        }
+        else if (cursors.left.isDown && player.body.touching.down)
+        {
+            direction = 'left';
+            player.setAccelerationX(-250);
+            player.anims.play('left', true);
+        }
+        else
+        {
+            player.setVelocityX(0);
+            player.setAccelerationX(0);
+            if(direction == 'right'){
+                player.anims.play('turn');
+            }
+            else{
+                player.anims.play('turn1');
+            }
+        }
+    
+    if (NEIGE == true){
+        if(cursors.right.isDown && !player.body.touching.down)
+        {
+            direction = 'right';
+            player.setVelocityX(100);
+            player.anims.play('rightjump', true);
+        }
+        else if (cursors.right.isDown && player.body.touching.down)
+        {
+            direction = 'right';
+            player.setVelocityX(100);
+            player.anims.play('right', true);
+        }
+        else if(cursors.left.isDown && !player.body.touching.down)
+        {
+            direction = 'left';
+            player.setVelocityX(-100);
+            player.anims.play('leftjump', true);
+        }
+        else if (cursors.left.isDown && player.body.touching.down)
+        {
+            direction = 'left';
+            player.setVelocityX(-100);
+            player.anims.play('left', true);
+        }
+        else
+        {
+            player.setVelocityX(0);
+            player.setAccelerationX(0);
+            if(direction == 'right'){
+                player.anims.play('turn');
+            }
+            else{
+                player.anims.play('turn1');
+            }
+        }
+    }
+    
+    if (GROUND == true){
+        if(cursors.right.isDown && !player.body.touching.down)
+        {
+            direction = 'right';
+            player.setVelocityX(200);
+            player.anims.play('rightjump', true);
+        }
+        else if (cursors.right.isDown &&player.body.touching.down)
+        {
+            direction = 'right';
+            player.setVelocityX(200);
+            player.anims.play('right', true);
+        }
+        else if(cursors.left.isDown && !player.body.touching.down)
+        {
+            direction = 'left';
+            player.setVelocityX(-200);
+            player.anims.play('leftjump', true);
+        }
+        else if (cursors.left.isDown && player.body.touching.down)
+        {
+            direction = 'left';
+            player.setVelocityX(-200);
+            player.anims.play('left', true);
+        }
+        else
+        {
+            player.setVelocityX(0);
+            player.setAccelerationX(0);
+            if(direction == 'right'){
+                player.anims.play('turn');
+            }
+            else{
+                player.anims.play('turn1');
+            }
+        }
+    }
+
+    if(cursors.space.isDown && player.body.touching.down)
+    {
+        player.setVelocityY(-370);
+        
+    }
+    //cursors.up.isDown  
+    
+
+}   
+</script>
+
+</body>
+</html>
