@@ -215,11 +215,12 @@ function create ()
     wall.create(750, 2180, 'mur').setScale(1.5).refreshBody();
     platforms.create(1800, 700, 'ground1');
     platforms.create(2030, 2100, 'ground1').setScale(1.5).refreshBody();
+    platforms.create(2100, 1720, 'ground1').setScale(1.5).refreshBody();
     glace.create(1400, 1900, 'glace').setScale(1.5).refreshBody();
     
     boiteR.create(70, 155, 'boiteR').setScale(1.5);
     boiteJ.create(1806, 655, 'boiteJ').setScale(1.5);
-    boiteV.create(2100, 2240, 'boiteV').setScale(1.5);
+    boiteV.create(2245, 2240, 'boiteV').setScale(1.5);
     carton.create(300, 1035, 'carton');
     power.create(2000,465,'power').setScale(2);
 
@@ -333,15 +334,17 @@ function create ()
     this.physics.add.collider(souris, platforms);
     ///////////////////////////////////
     this.physics.add.overlap(pique, player);
+    this.physics.add.collider(pique, neige);
     this.physics.add.collider(pique, platforms);
     this.physics.add.collider(pique, glace);
     //_________________________//
     this.physics.add.overlap(pique1, player);
+    this.physics.add.collider(pique1, neige);
     this.physics.add.collider(pique1, platforms);
     this.physics.add.collider(pique1, glace);
     //////////////////////////////////////////////////////////////////////////
 
-    block = this.physics.add.image(2000, 300, 'mur').setScale(1.5).setDepth(2);
+    block = this.physics.add.image(2000, 300, 'mur').setScale(1.5).setDepth(0);
     this.physics.add.collider(player,block);
     block.body.allowGravity = false;
     block.body.immovable = true;
@@ -355,7 +358,7 @@ function create ()
         yoyo: true
     });
     //_____________________________________
-    block2 = this.physics.add.image(300, 300, 'mur').setScale(1.5);
+    block2 = this.physics.add.image(300, 300, 'mur').setScale(1.5).setDepth(0);
     this.physics.add.collider(player,block2,);
     block2.body.allowGravity = false;
     block2.body.immovable = true;
@@ -425,7 +428,7 @@ function create ()
 
     /////////////////////////////////////////////////////////interface///////////////////////////////////////////////////////////////////////////////////////////
 
-    inter = this.add.image(980,500,'ui').setScrollFactor(0);
+    inter = this.add.image(980,500,'ui').setScrollFactor(0).setVisible(true);
     power2 = this.add.image(85,70,'powerenable').setScrollFactor(0).setScale(3.5).setVisible(true);
     power1 = this.add.image(85,70,'power').setScrollFactor(0).setScale(3.5).setVisible(false);
     //-----------------//
@@ -523,7 +526,7 @@ function create ()
         player.y = 900;
         player.setVelocityX(0);
         hp = 3;
-        hp = this.add.image(600,50,'vie1').setScrollFactor(0).setScale(2).setVisible(true);
+        //hp = this.add.image(600,50,'vie1').setScrollFactor(0).setScale(2).setVisible(true);
         return;
     }
     //////////////////////////////////
@@ -639,13 +642,16 @@ function update ()
     ///////////////////////////////////
     if(ecran.visible == true){
         player.setVelocityX(0);
+        chrono = 0;
         player.body.allowGravity = false;
         ascenseur();
+        inter.setVisible(false);
     }
     if(customKeys.F.isDown){
         ecran.setVisible(false);
         //window.setTimeout(myFunction, 60000);
         jouer = true;
+        inter.setVisible(true);
         player.body.allowGravity = true;
         ascenseur();
     }
@@ -690,10 +696,10 @@ function update ()
     }
     if (rocher1 == true){
         pique1.setAccelerationY(1000);
-        reactive = true;
-        if (reactive == true){
-            timer3 = timer2 + 1;
-            if (timer3 == 150){
+        reactive1 = true;
+        if (reactive1 == true){
+            timer2 = timer2 + 1;
+            if (timer2 == 150){
                 pique1.setAccelerationY(-1000);
                 reactive1 = false;
                 rocher1 = false;
