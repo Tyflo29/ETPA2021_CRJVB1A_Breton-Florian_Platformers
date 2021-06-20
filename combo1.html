@@ -520,15 +520,16 @@ function create ()
         }
         return;
     }
+    /*
     function réanimation()
     {
         player.x = 900;
         player.y = 900;
-        player.setVelocityX(0);
         hp = 3;
         //hp = this.add.image(600,50,'vie1').setScrollFactor(0).setScale(2).setVisible(true);
         return;
     }
+    */
     //////////////////////////////////
 
     function myFunction() {
@@ -739,7 +740,7 @@ function update ()
     else
     {
         hp = this.add.image(425,60,'vie4').setScrollFactor(0).setScale(2).setVisible(true);
-        réanimation();
+        gameOver = true;
     } 
             
     //////////////////////////////////
