@@ -684,7 +684,7 @@ function update ()
         inter.setVisible(false);
     }
 
-    if(customKeys.F.isDown){
+    if(customKeys.F.isDown  && ecran.visible == true){
         ecran.setVisible(false);
         window.setTimeout(myFunction, 120000);
         jouer = true;
