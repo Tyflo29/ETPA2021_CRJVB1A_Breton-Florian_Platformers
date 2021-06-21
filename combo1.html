@@ -464,7 +464,7 @@ function create ()
     boite3 = this.add.image(1670,70,'boiteV').setScrollFactor(0).setScale(2).setVisible(false).setDepth(1);
     //-----------------//
     inter1 = this.add.image(950,515,'interface').setScrollFactor(0).setVisible(false).setDepth(1);
-    this.controleText = this.add.text(1399, 45, '0', { fontFamily : 'Consolas', fontSize: '50px',fill: '#F00'}).setScrollFactor(0).setDepth(1);
+    this.controleText = this.add.text(1399, 40, '0', { fontFamily : 'Consolas', fontSize: '50px',fill: '#F00'}).setScrollFactor(0).setDepth(1);
 
     ///////////////////////////////////////////////////////////////////////////
     annonce= this.add.text(800, 500, 'Vous avez Gagné', { fontFamily : 'Consolas', fontSize: '32px', fill: '#5F5' }).setScrollFactor(0).setVisible(false).setDepth(1);
@@ -472,13 +472,13 @@ function create ()
     scoreText = this.add.text(350,95, 'Etat du carton', { fontFamily : 'Consolas', fontSize: '20px', fill: '#000' }).setScrollFactor(0).setVisible(true).setDepth(1);
 
     ///////////////////////////////////////////////////////////////////////////
-    /* Affichage aide :
-    this.textx = this.add.text(400, 200, '0', {fill: '#000'}).setScrollFactor(0);
-    this.texty = this.add.text(400, 250, '0', {fill: '#000'}).setScrollFactor(0);
-    this.colis = this.add.text(400, 300, '0', {fill: '#000'}).setScrollFactor(0);
-    this.score1 = this.add.text(400, 350, '0', {fill: '#000'}).setScrollFactor(0);
-    this.controleText1 = this.add.text(400, 450, '0', {fill: '#00'}).setScrollFactor(0);
-    */
+    //Affichage aide ://
+    //this.textx = this.add.text(400, 200, '0', {fill: '#000'}).setScrollFactor(0);
+    //this.texty = this.add.text(400, 250, '0', {fill: '#000'}).setScrollFactor(0);
+    //this.colis = this.add.text(400, 300, '0', {fill: '#000'}).setScrollFactor(0);
+    //this.score1 = this.add.text(400, 350, '0', {fill: '#000'}).setScrollFactor(0);
+    //this.controleText1 = this.add.text(400, 450, '0', {fill: '#00'}).setScrollFactor(0);
+    
 
     ///////////////////////////////////////////////////////////////////////////
     ecran = this.add.image(980,540,'acceuil').setDepth(3).setScrollFactor(0);
@@ -649,7 +649,7 @@ function update ()
         this.controleText.setText(minute + "m:" + chrono + "s");
     }
     ///////////////////////////////////
-    /* Affichage aide :
+    /* //Affichage aide ://
     this.textx.setText("X :" + Math.round(0 + player.x));
     this.texty.setText("y :" + Math.round(0 + player.y));
     this.colis.setText("Colis : " + colis);
@@ -691,22 +691,27 @@ function update ()
         inter.setVisible(true);
         player.body.allowGravity = true;
         ascenseur();
+        ecran.destroy();
+        commandes.destroy();
+        objectifs.destroy();
     }
 
-    if(customKeys.A.isDown){
-        ecran.setVisible(false);
-        commandes.setVisible(true);
-        objectifs.setVisible(false);
-    }
-    if(customKeys.Z.isDown){
-        ecran.setVisible(false);
-        commandes.setVisible(false);
-        objectifs.setVisible(true);
-    }
-    if(customKeys.ESC.isDown){
-        ecran.setVisible(true);
-        commandes.setVisible(false);
-        objectifs.setVisible(false);
+    if(ecran.visible == true || commandes.visible == true || objectifs.visible == true){
+        if(customKeys.A.isDown && ecran.visible == true){
+            ecran.setVisible(false);
+            commandes.setVisible(true);
+            objectifs.setVisible(false);
+        }
+        if(customKeys.Z.isDown && ecran.visible == true){
+            ecran.setVisible(false);
+            commandes.setVisible(false);
+            objectifs.setVisible(true);
+        }
+        if(customKeys.ESC.isDown){
+            ecran.setVisible(true);
+            commandes.setVisible(false);
+            objectifs.setVisible(false);
+        }
     }
     ///////////////////////////////////
     if (score == 3){
